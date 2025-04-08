@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: backend-service
+  profiles:
+    active: @spring.profiles.active@ # lấy giá trị từ file pom.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    root: INFO
+    web: INFO
+
