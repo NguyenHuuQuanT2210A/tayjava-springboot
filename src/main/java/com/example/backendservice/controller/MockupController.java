@@ -30,7 +30,7 @@ public class MockupController {
         userResponse1.setBirthday("1990-01-01");
         userResponse1.setEmail("nhq@gmail.com");
         userResponse1.setPhone("123456789");
-        userResponse1.setGender("male");
+//        userResponse1.setGender("male");
         UserResponse userResponse2 = new UserResponse();
         userResponse2.setId(2l);
         userResponse2.setFirstName("Huu");
@@ -39,7 +39,7 @@ public class MockupController {
         userResponse2.setBirthday("2004-12-24");
         userResponse2.setEmail("nhq2@gmail.com");
         userResponse2.setPhone("987654321");
-        userResponse2.setGender("male");
+//        userResponse2.setGender("male");
         List<UserResponse> userResponses = List.of(userResponse1, userResponse2);
         Map<String, Object> result = new LinkedHashMap<>();
             result.put("status", HttpStatus.OK.value());
@@ -60,7 +60,7 @@ public class MockupController {
         userDetail.setBirthday("2004-12-24");
         userDetail.setEmail("nhq2@gmail.com");
         userDetail.setPhone("987654321");
-        userDetail.setGender("male");
+//        userDetail.setGender("male");
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.OK.value());
         result.put("message", "get user detail");

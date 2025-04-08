@@ -3,12 +3,14 @@ package com.example.backendservice.controller;
 import com.example.backendservice.controller.request.UserCreationRequest;
 import com.example.backendservice.controller.request.UserPasswordRequest;
 import com.example.backendservice.controller.request.UserUpdateRequest;
+import com.example.backendservice.controller.response.UserPageResponse;
 import com.example.backendservice.controller.response.UserResponse;
 import com.example.backendservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ import java.util.Map;
 @RequestMapping("/user")
 @Tag(name = "User controller")
 @RequiredArgsConstructor
+@Slf4j(topic = "USERCONTROLLER")
 public class UserController {
     private final UserService userService;
 
@@ -28,31 +31,14 @@ public class UserController {
     @Operation(summary = "Get user list", description = "Api retrieve user from db")
     @GetMapping("/list")
     public Map<String, Object> getList(@RequestParam(required = false) String keyword,
+                                             @RequestParam(required = false) String sort,
                                            @RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "20") int size) {
-        UserResponse userResponse1 = new UserResponse();
-        userResponse1.setId(1l);
-        userResponse1.setFirstName("John");
-        userResponse1.setLastName("Doe");
-        userResponse1.setUsername("johndoe");
-        userResponse1.setBirthday("1990-01-01");
-        userResponse1.setEmail("nhq@gmail.com");
-        userResponse1.setPhone("123456789");
-        userResponse1.setGender("male");
-        UserResponse userResponse2 = new UserResponse();
-        userResponse2.setId(2l);
-        userResponse2.setFirstName("Huu");
-        userResponse2.setLastName("Quan");
-        userResponse2.setUsername("huuquan");
-        userResponse2.setBirthday("2004-12-24");
-        userResponse2.setEmail("nhq2@gmail.com");
-        userResponse2.setPhone("987654321");
-        userResponse2.setGender("male");
-        List<UserResponse> userResponses = List.of(userResponse1, userResponse2);
+        log.info("get user list: {}, {}, {}, {}", keyword, sort, page, size);
         Map<String, Object> result = new LinkedHashMap<>();
             result.put("status", HttpStatus.OK.value());
             result.put("message", "success");
-            result.put("data", userResponses);
+            result.put("data", userService.findAll(keyword, sort, page, size));
 
         return result;
     }
@@ -60,19 +46,13 @@ public class UserController {
     @Operation(summary = "Get user detail", description = "Api retrieve user detail from db")
     @GetMapping("/{userId}")
     public Map<String, Object> getUSerDetail(@PathVariable Long userId){
-        UserResponse userDetail = new UserResponse();
-        userDetail.setId(userId);
-        userDetail.setFirstName("Huu");
-        userDetail.setLastName("Quan");
-        userDetail.setUsername("huuquan");
-        userDetail.setBirthday("2004-12-24");
-        userDetail.setEmail("nhq2@gmail.com");
-        userDetail.setPhone("987654321");
-        userDetail.setGender("male");
+        log.info("get user detail: {}", userId);
+//        userService.findById(userId);
+
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.OK.value());
         result.put("message", "get user detail");
-        result.put("data", userDetail);
+        result.put("data", userService.findById(userId));
         return result;
     }
 
@@ -90,6 +70,8 @@ public class UserController {
     @Operation(summary = "Update user", description = "Api update user")
     @PutMapping("/update")
     public Map<String, Object> updateUser(@RequestBody UserUpdateRequest request) {
+        log.info("update user: {}", request);
+        userService.update(request);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.ACCEPTED.value());
         result.put("message", "update user");
@@ -100,6 +82,9 @@ public class UserController {
     @Operation(summary = "Change password", description = "Api change password")
     @PatchMapping("/change-pwd")
     public Map<String, Object> changePassword(@RequestBody UserPasswordRequest request) {
+        log.info("change password: {}", request);
+
+        userService.updatePassword(request);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.NO_CONTENT.value());
         result.put("message", "change pwd");
@@ -110,6 +95,9 @@ public class UserController {
     @Operation(summary = "Delete user", description = "Api inactivate user from database")
     @DeleteMapping("/delete/{userId}")
     public Map<String, Object> deleteUser(@PathVariable Long userId) {
+        log.info("delete user: {}", userId);
+        userService.delete(userId);
+
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.NO_CONTENT.value());
         result.put("message", "delete user");
