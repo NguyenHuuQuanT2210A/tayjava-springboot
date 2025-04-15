@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
         UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
         if (userByEmail != null) {
-            throw new InvalidDataException("Email already exists");
+            throw new RuntimeException("Email already exists");
         }
 
         UserEntity user = new UserEntity();
@@ -214,7 +214,7 @@ public class UserServiceImpl implements UserService {
      */
     private UserEntity getUserEntity(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     /**
