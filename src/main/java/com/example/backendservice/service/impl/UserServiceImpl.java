@@ -6,6 +6,7 @@ import com.example.backendservice.controller.request.UserPasswordRequest;
 import com.example.backendservice.controller.request.UserUpdateRequest;
 import com.example.backendservice.controller.response.UserPageResponse;
 import com.example.backendservice.controller.response.UserResponse;
+import com.example.backendservice.exception.InvalidDataException;
 import com.example.backendservice.exception.ResourceNotFoundException;
 import com.example.backendservice.model.AddressEntity;
 import com.example.backendservice.model.UserEntity;
@@ -106,6 +107,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     public long save(UserCreationRequest req) {
         log.info("Save user{} ", req);
+
+        UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
+        if (userByEmail != null) {
+            throw new InvalidDataException("Email already exists");
+        }
+
         UserEntity user = new UserEntity();
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());

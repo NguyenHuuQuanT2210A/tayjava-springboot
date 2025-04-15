@@ -18,4 +18,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "OR u.username like ?1 " +
             "OR u.phone like ?1)")
     Page<UserEntity> searchByKeyword(String keyword, Pageable pageable);
+
+    UserEntity findByUsername(String username);
+
+    UserEntity findByEmail(String email);
 }
