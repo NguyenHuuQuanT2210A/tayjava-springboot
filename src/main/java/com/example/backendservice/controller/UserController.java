@@ -8,6 +8,7 @@ import com.example.backendservice.controller.response.UserResponse;
 import com.example.backendservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +95,19 @@ public class UserController {
         result.put("message", "change pwd");
         result.put("data", "");
         return result;
+    }
+
+    @GetMapping("/confirm-email")
+    public void confirmEmail(@RequestParam String secretCode, HttpServletResponse response) throws IOException {
+        log.info("confirm email: {}", secretCode);
+        try {
+            // Call the service to confirm the email
+        } catch (Exception e) {
+            log.error("Error confirming email: {}", e.getMessage());
+            throw new RuntimeException("Error confirming email");
+        } finally {
+            response.sendRedirect("http://localhost:3000/home");
+        }
     }
 
     @Operation(summary = "Delete user", description = "Api inactivate user from database")

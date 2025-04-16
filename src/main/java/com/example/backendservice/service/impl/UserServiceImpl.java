@@ -12,6 +12,7 @@ import com.example.backendservice.model.AddressEntity;
 import com.example.backendservice.model.UserEntity;
 import com.example.backendservice.repository.AddressRepository;
 import com.example.backendservice.repository.UserRepository;
+import com.example.backendservice.service.EmailService;
 import com.example.backendservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
      private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
 
     @Override
@@ -148,6 +150,14 @@ public class UserServiceImpl implements UserService {
                 log.info("User {} created successfully", user.getId());
             }
         }
+
+        //send email confirm
+        try {
+            emailService.emailVerification(req.getEmail(), req.getUsername());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return user.getId();
     }
 

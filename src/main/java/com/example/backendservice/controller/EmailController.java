@@ -20,4 +20,10 @@ public class EmailController {
          log.info("Sending email to: {}, subject: {}, body: {}", to, subject, body);
         emailService.sendEmail(to, subject, body);
     }
+
+    @GetMapping("/verify-email")
+    public void verifyEmail(@RequestParam String to,
+                                @RequestParam String name) {
+        emailService.emailVerification(to, name);
+    }
 }
