@@ -2,6 +2,7 @@ package com.example.backendservice.service.impl;
 
 import com.example.backendservice.controller.request.SignInRequest;
 import com.example.backendservice.controller.response.TokenResponse;
+import com.example.backendservice.model.UserEntity;
 import com.example.backendservice.repository.UserRepository;
 import com.example.backendservice.service.AuthenticationService;
 import com.example.backendservice.service.JwtService;
@@ -16,6 +17,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.backendservice.common.TokenType.REFRESH_TOKEN;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j(topic = "AUTHENTICATION-SERVICE")
@@ -27,32 +33,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public TokenResponse getAccessToken(SignInRequest request) {
         log.info("Generating access token for user: {}", request.getUsername());
+
+        List<String> authorities = new ArrayList<>();
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
+            log.info("isAuthenticated: {}", authentication.isAuthenticated());
+            log.info("Authorities: {}", authentication.getAuthorities());
+            authorities.add(authentication.getAuthorities().toString());
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (AuthenticationException e) {
             log.error("Login failed, message: {}", e.getMessage());
             throw new AccessDeniedException(e.getMessage());
         }
 
-        var user = userRepository.findByUsername(request.getUsername());
-        if (user == null) {
-            log.error("User not found: {}", request.getUsername());
-            throw new UsernameNotFoundException("User not found");
-        }
-
         String accessToken =  jwtService.generateAccessToken(
-                user.getId(),
                 request.getUsername(),
-                user.getAuthorities()
+                authorities
         );
 
         String refreshToken = jwtService.generateRefreshToken(
-                user.getId(),
                 request.getUsername(),
-                user.getAuthorities()
+                authorities
         );
         return TokenResponse.builder()
                 .accessToken(accessToken)
@@ -62,6 +66,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public TokenResponse getRefreshToken(String refreshToken) {
-        return null;
+        String username = jwtService.extractUsername(refreshToken, REFRESH_TOKEN);
+
+        UserEntity user = userRepository.findByUsername(username);
+        List<String> authorities = new ArrayList<>();
+        user.getAuthorities()
+                .forEach(authority -> authorities.add(authority.getAuthority()));
+
+        String accessToken = jwtService.generateAccessToken(
+                username,
+                authorities
+        );
+
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

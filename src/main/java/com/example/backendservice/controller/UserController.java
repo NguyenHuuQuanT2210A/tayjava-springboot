@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class UserController {
 
     @Operation(summary = "Get user list", description = "Api retrieve user from db")
     @GetMapping("/list")
+    @PreAuthorize("hasAnyAuthority('sysadmin', 'admin')")
     public Map<String, Object> getList(@RequestParam(required = false) String keyword,
                                              @RequestParam(required = false) String sort,
                                            @RequestParam(defaultValue = "0") int page,
@@ -50,6 +52,7 @@ public class UserController {
 
     @Operation(summary = "Get user detail", description = "Api retrieve user detail from db")
     @GetMapping("/{userId}")
+    @PreAuthorize("hasAuthority('user')")
     public Map<String, Object> getUSerDetail(@PathVariable @Min(value = 1, message = "userId must be equals or greater than 1") Long userId){
         log.info("get user detail: {}", userId);
 //        userService.findById(userId);
@@ -112,6 +115,7 @@ public class UserController {
 
     @Operation(summary = "Delete user", description = "Api inactivate user from database")
     @DeleteMapping("/delete/{userId}")
+    @PreAuthorize("hasAuthority('admin')")
     public Map<String, Object> deleteUser(@PathVariable @Min(value = 1, message = "userId must be equals or greater than 1") Long userId) {
         log.info("delete user: {}", userId);
         userService.delete(userId);

@@ -14,6 +14,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +30,7 @@ import static com.example.backendservice.common.TokenType.ACCESS_TOKEN;
 @Component
 @Slf4j(topic = "CUSTOMER_REQUEST_FILTER")
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)
 public class CustomizeRequestFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
@@ -37,6 +39,9 @@ public class CustomizeRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Custom logic before the request is processed
         log.info("{} {}", request.getMethod(), request.getRequestURI());
+
+        //TODO: Co the check phan quyen api o day
+
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             authHeader = authHeader.substring(7);
@@ -49,7 +54,9 @@ public class CustomizeRequestFilter extends OncePerRequestFilter {
             } catch (AccessDeniedException e) {
                 log.info("Access denied, message: {}", e.getMessage());
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write(errorResponse(e.getMessage()));
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(errorResponse(request.getRequestURI(), e.getMessage()));
                 return;
             }
 
@@ -73,11 +80,12 @@ public class CustomizeRequestFilter extends OncePerRequestFilter {
      * @param message
      * @return
      */
-    private String errorResponse(String message) {
+    private String errorResponse(String message, String uri) {
         try {
             ErrorResponse error = new ErrorResponse();
             error.setTimestamp(new Date());
             error.setError("Forbidden");
+            error.setPath(uri);
             error.setStatus(HttpServletResponse.SC_FORBIDDEN);
             error.setMessage(message);
 
@@ -93,6 +101,7 @@ public class CustomizeRequestFilter extends OncePerRequestFilter {
     private class ErrorResponse {
         private Date timestamp;
         private int status;
+        private String path;
         private String error;
         private String message;
     }
