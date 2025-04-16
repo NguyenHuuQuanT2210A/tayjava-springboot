@@ -2,6 +2,7 @@ package com.example.backendservice.controller;
 
 import com.example.backendservice.controller.request.SignInRequest;
 import com.example.backendservice.controller.response.TokenResponse;
+import com.example.backendservice.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j(topic = "AUTHENTICATION-CONTROLLER")
 @Tag(name = "Authentication", description = "Authentication APIs")
 public class AuthenticationController {
+    private final AuthenticationService authenticationService;
 
     @Operation(summary = "Access token", description = "Get access token and refresh token by username and password")
     @PostMapping(value = "/access-token")
     public TokenResponse getAccessToken(@RequestBody SignInRequest request) {
         log.info("Received login request for username: {}", request.getUsername());
         // Implement your authentication logic here
-        return TokenResponse.builder()
-                .accessToken("DUMMY-ACCESS-TOKEN")
-                .refreshToken("DUMMY-REFRESH-TOKEN")
-                .build();
+        return authenticationService.getAccessToken(request);
     }
 
     @Operation(summary = "Refresh token", description = "Get new access token by refresh token")
