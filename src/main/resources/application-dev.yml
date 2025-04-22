@@ -37,5 +37,5 @@ openapi:
 jwt:
   accessKey: hyIXEPJEn/5PMrQO2JKLQwWb3pTQjGywg1ehe2WHxUk=
   refreshKey: 1n5Ywq414RLZEOcj9HakJECm2svut7w26ujRn9xBWLk=
-  expiryMinutes: 1
+  expiryMinutes: 60
   expiryDay: 14

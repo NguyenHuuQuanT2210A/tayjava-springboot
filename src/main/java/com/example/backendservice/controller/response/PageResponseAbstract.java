@@ -5,8 +5,8 @@ import lombok.*;
 @Getter
 @Setter
 public abstract class PageResponseAbstract {
-    public int pageNumber;
-    public int pageSize;
-    public long totalElements;
-    public int totalPages;
+    private int pageNumber;
+    private int pageSize;
+    private long totalElements;
+    private int totalPages;
 }

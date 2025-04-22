@@ -1,5 +1,6 @@
 package com.example.backendservice.config;
 
+import com.example.backendservice.controller.response.ErrorResponse;
 import com.example.backendservice.service.JwtService;
 import com.example.backendservice.service.UserServiceDetail;
 import com.google.gson.Gson;
@@ -8,9 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -94,15 +93,5 @@ public class CustomizeRequestFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             return ""; // Return an empty string if serialization fails
         }
-    }
-
-    @Getter
-    @Setter
-    private class ErrorResponse {
-        private Date timestamp;
-        private int status;
-        private String path;
-        private String error;
-        private String message;
     }
 }
