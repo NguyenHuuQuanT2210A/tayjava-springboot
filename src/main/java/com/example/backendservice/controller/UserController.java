@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,19 @@ public class UserController {
         result.put("status", HttpStatus.OK.value());
         result.put("message", "get user detail");
         result.put("data", userService.findById(userId));
+        return result;
+    }
+
+    @Operation(summary = "Get user by username", description = "Api get user by username")
+    @GetMapping("/search/username/{username}")
+//    @PreAuthorize("hasAuthority('user')")
+    public Map<String, Object> getUserByUsername(@PathVariable @NotBlank String username){
+        log.info("get user by username: {}", username);
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("status", HttpStatus.OK.value());
+        result.put("message", "get user by username");
+        result.put("data", userService.findByUsername(username));
         return result;
     }
 

@@ -97,12 +97,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse findByUsername(String username) {
-        return null;
+        UserEntity user = userRepository.findByUsername(username);
+        return UserResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .username(user.getUsername())
+                .gender(user.getGender())
+                .birthday(user.getBirthday())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .build();
     }
 
     @Override
     public UserResponse findByEmail(String email) {
-        return null;
+        UserEntity user = userRepository.findByEmail(email);
+        return UserResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .username(user.getUsername())
+                .gender(user.getGender())
+                .birthday(user.getBirthday())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .build();
     }
 
     @Override
@@ -125,12 +145,12 @@ public class UserServiceImpl implements UserService {
         user.setPhone(req.getPhone());
         user.setType(req.getType());
         user.setStatus(UserStatus.NONE);
-        userRepository.save(user);
-        log.info("SAVE USER {}", user);
+        UserEntity result = userRepository.save(user);
+        log.info("SAVE USER {}", result);
 
         if (user.getId() != null) {
             // Save addresses if any
-            log.info("user id is {}", user.getId());
+            log.info("user id is {}", result.getId());
             List<AddressEntity> addresses = new ArrayList<>();
             if (req.getAddresses() != null) {
                 req.getAddresses().forEach(address -> {
@@ -143,11 +163,11 @@ public class UserServiceImpl implements UserService {
                     addressEntity.setCity(address.getCity());
                     addressEntity.setCountry(address.getCountry());
                     addressEntity.setAddressType(address.getAddressType());
-                    addressEntity.setUserId(user.getId());
+                    addressEntity.setUserId(result.getId());
                     addresses.add(addressEntity);
                 });
                 addressRepository.saveAll(addresses);
-                log.info("User {} created successfully", user.getId());
+                log.info("User {} created successfully", result.getId());
             }
         }
 
@@ -158,7 +178,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException(e);
         }
 
-        return user.getId();
+        return result.getId();
     }
 
     @Override
@@ -203,8 +223,11 @@ public class UserServiceImpl implements UserService {
         UserEntity user = getUserEntity(req.getId());
         if (req.getPassword().equals(req.getConfirmPassword())){
             user.setPassword(passwordEncoder.encode(req.getPassword()));
+            userRepository.save(user);
+        } else {
+            throw new InvalidDataException("Password and confirm password do not match");
         }
-        userRepository.save(user);
+//        userRepository.save(user);
         log.info("User {} updated password successfully", user.getId());
     }
 
@@ -224,7 +247,7 @@ public class UserServiceImpl implements UserService {
      */
     private UserEntity getUserEntity(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     /**
