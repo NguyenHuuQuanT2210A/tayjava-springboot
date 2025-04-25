@@ -28,6 +28,7 @@
     </scm>
     <properties>
         <java.version>17</java.version>
+        <image.path>registry.hub.docker.com/nguyenhuuquan2412</image.path>
     </properties>
     <dependencies>
         <!-- Health Check -->
@@ -189,6 +190,34 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.5</version>
+                <configuration>
+                    <from>
+                        <image>amazoncorretto:17.0.9</image>
+                    </from>
+                    <to>
+                        <image>${image.path}/${project.artifactId}:latest-dev</image>
+                        <!-- Setting dockerhub account -->
+                        <auth>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <username>${env.DOCKER_USERNAME}</username>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <password>${env.DOCKER_PASSWORD}</password>
+                        </auth>
+                    </to>
+                    <container>
+                        <ports>
+                            <port>8080</port>
+                        </ports>
+                        <environment>
+                            <SPRING_PROFILES_ACTIVE>dev</SPRING_PROFILES_ACTIVE>
+                        </environment>
+                    </container>
                 </configuration>
             </plugin>
         </plugins>
