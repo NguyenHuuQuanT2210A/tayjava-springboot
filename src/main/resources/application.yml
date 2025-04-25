@@ -12,6 +12,7 @@ management:
     web:
       exposure:
         include: "*"
+#        include: health,prometheus,metrics
 
 logging:
   level:
