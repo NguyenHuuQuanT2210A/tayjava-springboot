@@ -4,16 +4,18 @@ spring:
       on-profile: dev
   devtools:
     add-properties: true
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
+#  datasource:
+#    url: jdbc:postgresql://localhost:5439/postgres
+#    username: postgres
+#    password: 123456
+#  jpa:
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
 
-# application-dev.yml
 springdoc:
   api-docs:
     enabled: true
@@ -27,4 +29,4 @@ openapi:
     version: 1.0.0
 
 jwt:
-  secretKey: abc@123
+  secret: abc
