@@ -13,6 +13,7 @@ spring:
       hibernate:
         format_sql: true
 
+# application-prod.yml
 springdoc:
   api-docs:
     enabled: false
@@ -20,4 +21,4 @@ springdoc:
     enabled: false
 
 jwt:
-  secret: asddsw
+  secretKey: bvffjk@123

@@ -13,6 +13,7 @@ spring:
       hibernate:
         format_sql: true
 
+# application-test.yml
 springdoc:
   api-docs:
     enabled: true
@@ -26,4 +27,4 @@ openapi:
     version: 1.0.0
 
 jwt:
-  secret: asdsda
+  secretKey: xyz@123

@@ -5,16 +5,15 @@ spring:
   application:
     name: backend-service
   profiles:
-    active: @spring.profiles.active@ # lấy giá trị từ file pom.xml
+    active: @spring.profiles.active@
 
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: '*'
 
 logging:
   level:
     root: INFO
     web: INFO
-
